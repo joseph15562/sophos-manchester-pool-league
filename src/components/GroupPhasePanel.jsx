@@ -4,7 +4,7 @@ import {
   buildGroupMatches,
   getGroupWinners,
   getAllGroupStandings,
-  VALID_GROUP_PHASE_SIZES,
+  GROUP_PHASE_SIZE_HINT,
 } from '../lib/groups';
 import { generateBracket } from '../lib/bracket';
 
@@ -61,12 +61,11 @@ export default function GroupPhasePanel({
   // No groups yet: show start CTA
   if (!groups || groups.length === 0) {
     const canStart = canStartGroupPhase(players.length);
-    const hint = VALID_GROUP_PHASE_SIZES.join(', ');
     return (
       <section className={`panel group-phase-panel ${locked ? 'panel--locked' : ''}`}>
         <h2>Group phase</h2>
         <p className="hint">
-          Add <strong>{hint} players</strong>, then start the group phase. Each group of 4 plays round-robin (everyone vs everyone once). 1st in each group qualifies for the knockout.
+          Add <strong>{GROUP_PHASE_SIZE_HINT}</strong>. Groups have up to 4 players; everyone in each group plays everyone else once. 1st in each group qualifies for the knockout (no need for exactly 8, 16 or 32).
         </p>
         <button
           type="button"
@@ -78,7 +77,7 @@ export default function GroupPhasePanel({
         </button>
         {players.length > 0 && !canStart && (
           <p className="empty">
-            You have {players.length} players. Need exactly {hint} for the group phase.
+            You have {players.length} players. Need {GROUP_PHASE_SIZE_HINT} for the group phase.
           </p>
         )}
       </section>

@@ -1,24 +1,46 @@
 import { generateId } from './fixture';
 
-const PLAYERS_PER_GROUP = 4;
+const MIN_PER_GROUP = 2;
+const MAX_PER_GROUP = 4;
 
-/** Valid total player counts for group phase: 8, 16, 32 (so 2, 4, or 8 groups → knockout size 2, 4, 8). */
-export const VALID_GROUP_PHASE_SIZES = [8, 16, 32];
+/** Human-readable hint for valid group phase sizes (no longer just 8, 16, 32). */
+export const GROUP_PHASE_SIZE_HINT = '4–8, 8–16, or 16–32 players (up to 4 per group)';
 
+/** Valid: 2, 4, or 8 groups with 2–4 players each → 4–8, 8–16, or 16–32 players. No more power-of-2-only limit. */
 export function canStartGroupPhase(playerCount) {
-  return VALID_GROUP_PHASE_SIZES.includes(playerCount);
+  if (playerCount < 4 || playerCount > 32) return false;
+  const numGroups = getNumGroups(playerCount);
+  if (!numGroups) return false;
+  const minTotal = numGroups * MIN_PER_GROUP;
+  const maxTotal = numGroups * MAX_PER_GROUP;
+  return playerCount >= minTotal && playerCount <= maxTotal;
+}
+
+/** Number of groups (2, 4, or 8) for a given player count, or null if invalid. */
+function getNumGroups(playerCount) {
+  if (playerCount >= 16 && playerCount <= 32) return 8;
+  if (playerCount >= 8 && playerCount <= 16) return 4;
+  if (playerCount >= 4 && playerCount <= 8) return 2;
+  return null;
 }
 
 /**
- * Create groups of 4 from a list of players (order preserved: group 1 = first 4, etc.).
+ * Create groups with 2–4 players each (evenly distributed). 2, 4, or 8 groups so knockout is 2/4/8.
  * @param {Array<{ id: string, name: string }>} players
  * @returns {Array<{ id: string, name: string, playerIds: string[] }>} or null if count not valid
  */
 export function createGroups(players) {
   if (!canStartGroupPhase(players.length)) return null;
+  const n = players.length;
+  const numGroups = getNumGroups(n);
+  const baseSize = Math.floor(n / numGroups);
+  const remainder = n % numGroups;
   const groups = [];
-  for (let i = 0; i < players.length; i += PLAYERS_PER_GROUP) {
-    const slice = players.slice(i, i + PLAYERS_PER_GROUP);
+  let idx = 0;
+  for (let g = 0; g < numGroups; g++) {
+    const size = baseSize + (g < remainder ? 1 : 0);
+    const slice = players.slice(idx, idx + size);
+    idx += size;
     groups.push({
       id: generateId(),
       name: `Group ${groups.length + 1}`,

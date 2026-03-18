@@ -70,7 +70,7 @@ export default function DisplayBoard() {
           <p className="display-subtitle">ROAD TO FINAL</p>
         </header>
         <p className="display-empty display-empty-center">
-          Add players and generate the bracket on the main page. Or add 8, 16, or 32 players and start the group phase (4 per group, everyone plays everyone once; 1st qualifies).
+          Add players and generate the bracket on the main page. Or add 4–8, 8–16, or 16–32 players and start the group phase (up to 4 per group, everyone plays everyone once; 1st qualifies).
         </p>
         <p className="display-empty display-sync-hint">
           On a TV or AirTame? Open the main page on your phone or laptop—content will appear here automatically in a few seconds.
