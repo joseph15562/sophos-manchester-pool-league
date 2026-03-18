@@ -1,47 +1,49 @@
 import { useState, useEffect, useCallback } from 'react';
 import { loadState, STORAGE_KEY } from '../lib/storage';
 import { getRoundLabel } from '../lib/bracket';
+import { getAllGroupStandings } from '../lib/groups';
 import './DisplayBoard.css';
 
-function applyState(data, setPlayers, setBracket) {
+function applyState(data, setPlayers, setBracket, setGroups, setGroupMatches) {
   if (!data) return;
   setPlayers(Array.isArray(data.players) ? data.players : []);
   setBracket(data.bracket ?? null);
+  setGroups(Array.isArray(data.groups) ? data.groups : null);
+  setGroupMatches(Array.isArray(data.groupMatches) ? data.groupMatches : []);
 }
 
 export default function DisplayBoard() {
   const [players, setPlayers] = useState([]);
   const [bracket, setBracket] = useState(null);
+  const [groups, setGroups] = useState(null);
+  const [groupMatches, setGroupMatches] = useState([]);
 
   const handleStorage = useCallback(
     (e) => {
       if (e.key !== STORAGE_KEY || !e.newValue) return;
       try {
-        applyState(JSON.parse(e.newValue), setPlayers, setBracket);
+        applyState(JSON.parse(e.newValue), setPlayers, setBracket, setGroups, setGroupMatches);
       } catch {}
     },
     []
   );
 
-  // Initial load from localStorage (same device)
   useEffect(() => {
     const state = loadState();
-    applyState(state, setPlayers, setBracket);
+    applyState(state, setPlayers, setBracket, setGroups, setGroupMatches);
   }, []);
 
-  // Same device: listen for storage events
   useEffect(() => {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, [handleStorage]);
 
-  // Other device (e.g. TV): poll API so TV updates when laptop changes
   const fetchState = useCallback(async () => {
     try {
       const r = await fetch('/api/state');
       if (r.ok) {
         const data = await r.json();
-        applyState(data, setPlayers, setBracket);
+        applyState(data, setPlayers, setBracket, setGroups, setGroupMatches);
       }
     } catch {}
   }, []);
@@ -54,7 +56,12 @@ export default function DisplayBoard() {
 
   const getPlayerName = (id) => (id ? players.find((p) => p.id === id)?.name ?? '—' : 'BYE');
 
-  if (!bracket || !bracket.rounds?.length) {
+  const hasBracket = bracket && bracket.rounds?.length;
+  const hasGroups = groups && groups.length > 0;
+  const playersById = Object.fromEntries(players.map((p) => [p.id, p]));
+  const groupStandingsData = hasGroups ? getAllGroupStandings(groups, groupMatches, playersById) : [];
+
+  if (!hasBracket && !hasGroups) {
     return (
       <div className="display-board">
         <div className="display-bg-gradient" aria-hidden="true" />
@@ -63,10 +70,39 @@ export default function DisplayBoard() {
           <p className="display-subtitle">ROAD TO FINAL</p>
         </header>
         <p className="display-empty display-empty-center">
-          Add players and generate the bracket on the main page. Everyone will appear in the first round; winners advance until one champion.
+          Add players and generate the bracket on the main page. Or add 8, 16, or 32 players and start the group phase (4 per group, everyone plays everyone once; 1st qualifies).
         </p>
         <p className="display-empty display-sync-hint">
-          On a TV or AirTame? Open the main page on your phone or laptop—the bracket will appear here automatically in a few seconds. No need to tap anything on the screen.
+          On a TV or AirTame? Open the main page on your phone or laptop—content will appear here automatically in a few seconds.
+        </p>
+      </div>
+    );
+  }
+
+  if (!hasBracket && hasGroups) {
+    return (
+      <div className="display-board display-board-groups">
+        <div className="display-bg-gradient" aria-hidden="true" />
+        <header className="display-header">
+          <h1 className="display-title">SOPHOS MANCHESTER POOL LEAGUE</h1>
+          <p className="display-subtitle">GROUP PHASE · 1ST IN EACH GROUP QUALIFIES</p>
+        </header>
+        <div className="display-groups-container">
+          {groupStandingsData.map(({ groupName, standings }) => (
+            <div key={groupName} className="display-group-card">
+              <h3 className="display-group-title">{groupName}</h3>
+              <ol className="display-group-standings">
+                {standings.map((s, idx) => (
+                  <li key={s.playerId} className={idx === 0 ? 'display-group-first' : ''}>
+                    {idx + 1}. {s.name} <span className="display-group-wins">— {s.wins} win{s.wins !== 1 ? 's' : ''}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
+        <p className="display-empty display-sync-hint">
+          Record results on the main page. When all group matches are done, generate the knockout from group winners.
         </p>
       </div>
     );

@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const token = process.env.UPSTASH_REDIS_REST_TOKEN;
 
   if (!url || !token) {
-    if (req.method === 'GET') return res.status(200).json({ players: [], matches: [], bracket: null });
+    if (req.method === 'GET') return res.status(200).json({ players: [], matches: [], bracket: null, groups: null, groupMatches: [] });
     return res.status(503).json({ error: 'Server state not configured. Add Upstash Redis env vars for TV sync across devices.' });
   }
 
@@ -16,7 +16,16 @@ export default async function handler(req, res) {
       });
       const data = await r.json();
       if (data.error) return res.status(400).json({ error: data.error });
-      const state = data.result == null ? { players: [], matches: [], bracket: null } : JSON.parse(data.result);
+      const raw = data.result == null ? null : JSON.parse(data.result);
+      const state = raw
+        ? {
+            players: raw.players ?? [],
+            matches: raw.matches ?? [],
+            bracket: raw.bracket ?? null,
+            groups: raw.groups ?? null,
+            groupMatches: Array.isArray(raw.groupMatches) ? raw.groupMatches : [],
+          }
+        : { players: [], matches: [], bracket: null, groups: null, groupMatches: [] };
       return res.status(200).json(state);
     } catch (e) {
       return res.status(500).json({ error: String(e.message) });

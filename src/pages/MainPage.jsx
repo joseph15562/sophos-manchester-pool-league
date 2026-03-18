@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import PlayerList from '../components/PlayerList';
+import GroupPhasePanel from '../components/GroupPhasePanel';
 import BracketPanel from '../components/BracketPanel';
 import PinLockBar from '../components/PinLockBar';
 import { loadState, saveState } from '../lib/storage';
@@ -11,6 +12,8 @@ export default function MainPage() {
   const [players, setPlayers] = useState([]);
   const [matches, setMatches] = useState([]);
   const [bracket, setBracket] = useState(null);
+  const [groups, setGroups] = useState(null);
+  const [groupMatches, setGroupMatches] = useState([]);
   const [locked, setLocked] = useState(getLocked());
 
   useEffect(() => {
@@ -18,17 +21,18 @@ export default function MainPage() {
     setPlayers(state.players);
     setMatches(state.matches ?? []);
     setBracket(state.bracket);
+    setGroups(state.groups ?? null);
+    setGroupMatches(state.groupMatches ?? []);
   }, []);
 
   useEffect(() => {
-    saveState(players, matches, bracket);
-    // Sync to API so TV on another device can poll and stay in sync
+    saveState(players, matches, bracket, groups, groupMatches);
     fetch('/api/state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ players, matches, bracket }),
+      body: JSON.stringify({ players, matches, bracket, groups, groupMatches }),
     }).catch(() => {});
-  }, [players, matches, bracket]);
+  }, [players, matches, bracket, groups, groupMatches]);
 
   return (
     <div className="app">
@@ -43,6 +47,16 @@ export default function MainPage() {
       </header>
       <main className="app-main">
         <PlayerList players={players} onPlayersChange={setPlayers} locked={locked} />
+        <GroupPhasePanel
+          players={players}
+          groups={groups}
+          groupMatches={groupMatches}
+          onGroupsChange={setGroups}
+          onGroupMatchesChange={setGroupMatches}
+          bracket={bracket}
+          onBracketChange={setBracket}
+          locked={locked}
+        />
         <BracketPanel
           players={players}
           bracket={bracket}

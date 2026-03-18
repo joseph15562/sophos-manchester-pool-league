@@ -354,6 +354,62 @@
 .display-refresh-btn:hover { filter: brightness(1.08); }
 .display-refresh-btn:active { filter: brightness(0.95); }
 
+/* Group phase only (no knockout yet) */
+.display-board-groups .display-groups-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.25rem;
+  flex: 1;
+  align-content: start;
+  position: relative;
+  z-index: 1;
+}
+
+.display-group-card {
+  background: linear-gradient(180deg, #1e3a5f 0%, #152a45 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+}
+
+.display-group-title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(0.85rem, 1.8vw, 1.1rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #93c5fd;
+  text-transform: uppercase;
+}
+
+.display-group-standings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.display-group-standings li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.display-group-standings li:last-child { border-bottom: none; }
+
+.display-group-first {
+  color: #fde047;
+  font-weight: 700;
+}
+
+.display-group-wins {
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.display-board-groups .display-sync-hint {
+  margin-top: 1rem;
+}
+
 .bracket-display-container {
   flex: 1;
   display: grid;

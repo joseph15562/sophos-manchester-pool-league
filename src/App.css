@@ -385,3 +385,79 @@
   gap: 0.35rem;
   flex-wrap: wrap;
 }
+
+/* Group phase panel */
+.group-phase-panel .group-phase-group {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .group-phase-panel .group-phase-group {
+    background: rgba(255, 255, 255, 0.05);
+  }
+}
+
+.group-phase-group-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 0.5rem;
+}
+
+.group-phase-standings-label,
+.group-phase-matches-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.35rem;
+}
+
+.group-phase-standings-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-h);
+}
+
+.group-phase-standings-list li {
+  padding: 0.2rem 0;
+}
+
+.group-phase-standings-first {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.group-phase-match-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.group-phase-match-item {
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.group-phase-match-item:last-child {
+  border-bottom: none;
+}
+
+.group-phase-match-vs {
+  font-weight: 500;
+  color: var(--text-h);
+  min-width: 160px;
+}
+
+.group-phase-actions {
+  margin-top: 1.25rem;
+}
