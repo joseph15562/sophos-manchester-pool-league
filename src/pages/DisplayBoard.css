@@ -1,0 +1,456 @@
+/* TV display – Road to Final style: 3 columns, dark navy, rounded match bars, center league table */
+
+.display-board {
+  min-height: 100vh;
+  aspect-ratio: 16 / 9;
+  min-aspect-ratio: 16 / 9;
+  background: #0a1628;
+  color: #fff;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.5rem;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.display-bg-gradient {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 80% 70% at 50% 40%,
+    rgba(56, 129, 192, 0.2) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.display-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30 30 60 0 30z' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='.5'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Bracket lines: vertical spines + horizontal lines into center (Road to Final style) */
+.display-bracket-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Vertical spine on inner edge of each side column – connects to SVG lines */
+.display-side-left::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -2px;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.display-side-right::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.display-header {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(96, 165, 250, 0.5);
+  position: relative;
+  z-index: 1;
+}
+
+.display-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.display-subtitle {
+  margin: 0.25rem 0 0;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #93c5fd;
+}
+
+.display-three-col {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 1.2fr) 1fr;
+  gap: 1.25rem;
+  align-content: start;
+  position: relative;
+  z-index: 1;
+  min-height: 0;
+}
+
+@media (max-width: 900px) {
+  .display-three-col {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+}
+
+/* Side columns – fixture as match boxes, bracket spine on inner edge */
+.display-side {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+}
+
+.display-side-title {
+  margin: 0 0 0.6rem;
+  font-size: clamp(0.75rem, 1.6vw, 0.95rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #93c5fd;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+
+.display-side .display-fixture-label,
+.display-side .display-match-bars {
+  position: relative;
+  z-index: 1;
+}
+
+.display-fixture-label {
+  margin: 0.5rem 0 0.25rem;
+  font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.display-fixture-label:first-of-type {
+  margin-top: 0;
+}
+
+.display-fixture-label-next {
+  color: #fde047;
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.display-match-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  overflow: auto;
+}
+
+.display-bar-wrap {
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Horizontal line from each match bar to the bracket spine (who plays next) */
+.display-bar-connector {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+.display-side-left .display-bar-connector {
+  left: 100%;
+  margin-left: 4px;
+}
+
+.display-side-right .display-bar-connector {
+  right: 100%;
+  margin-right: 4px;
+  left: auto;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* Rectangular match boxes like reference (TEAM VS TEAM in blue containers) */
+.display-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: linear-gradient(180deg, #1e3a5f 0%, #152a45 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: clamp(0.75rem, 1.4vw, 0.95rem);
+  font-weight: 600;
+  color: #e2e8f0;
+  text-align: center;
+}
+
+.display-bar-vs {
+  font-size: 0.75em;
+  font-weight: 800;
+  color: #64748b;
+  letter-spacing: 0.05em;
+}
+
+.display-bar-winner {
+  color: #fde047;
+  font-weight: 700;
+}
+
+.display-bar-empty {
+  justify-content: center;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.display-match-bars-next .display-bar {
+  border-style: dashed;
+  border-color: rgba(253, 224, 71, 0.4);
+}
+
+/* Center – league table + trophy */
+.display-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(96, 165, 250, 0.35);
+  border-radius: 10px;
+  min-height: 0;
+}
+
+.display-trophy-wrap {
+  margin-bottom: 0.35rem;
+}
+
+.display-trophy {
+  width: clamp(36px, 5vw, 48px);
+  height: auto;
+  filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.4));
+}
+
+.display-center-title {
+  margin: 0;
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.display-center-subtitle {
+  margin: 0.15rem 0 0.5rem;
+  font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: #93c5fd;
+}
+
+.display-empty-center {
+  margin: 0.5rem 0;
+  font-size: clamp(0.8rem, 1.6vw, 0.95rem);
+  color: #94a3b8;
+}
+
+.display-table-wrap {
+  width: 100%;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+}
+
+.display-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: clamp(0.8rem, 1.6vw, 1rem);
+}
+
+.display-table th,
+.display-table td {
+  padding: 0.4rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(71, 85, 105, 0.5);
+}
+
+.display-table th {
+  font-weight: 700;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.8);
+  letter-spacing: 0.04em;
+}
+
+.display-table td.display-player-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.display-table tbody tr.display-row-leader {
+  background: rgba(234, 179, 8, 0.12);
+}
+
+.display-table tbody tr.display-row-leader .display-player-name {
+  color: #fde047;
+}
+
+/* ========== Bracket display: everyone at start, eliminate toward final ========== */
+.display-board-bracket .display-empty-center {
+  margin: 2rem auto;
+  text-align: center;
+  max-width: 480px;
+}
+
+.bracket-display-container {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.bracket-display-half {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.bracket-display-left {
+  justify-content: flex-end;
+}
+
+.bracket-display-right {
+  justify-content: flex-end; /* pack content toward center (left in row-reverse) */
+  flex-direction: row-reverse;
+}
+
+.bracket-display-round {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.bracket-display-round-label {
+  font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #93c5fd;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.bracket-display-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  justify-content: space-evenly;
+  flex: 1;
+}
+
+.bracket-display-match {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.4rem;
+  background: linear-gradient(180deg, #1e3a5f 0%, #152a45 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+  font-weight: 600;
+  color: #e2e8f0;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.bracket-display-slot {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.bracket-display-slot-a { text-align: right; }
+.bracket-display-slot-b { text-align: left; }
+
+.bracket-display-vs {
+  font-size: 0.7em;
+  font-weight: 800;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.bracket-display-winner {
+  color: #fde047;
+}
+
+.bracket-display-tbd {
+  color: #64748b;
+  font-style: italic;
+}
+
+.bracket-display-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+.bracket-display-final-label {
+  margin-bottom: 0.35rem;
+  color: #fde047;
+}
+
+.bracket-display-final {
+  padding: 0.4rem 0.6rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+}
+
+.bracket-display-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  border-top: 2px solid rgba(96, 165, 250, 0.4);
+  margin-top: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.bracket-display-footer-label {
+  font-size: clamp(0.55rem, 1.1vw, 0.65rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #93c5fd;
+}
