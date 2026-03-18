@@ -6,7 +6,7 @@ Web app for running a **single-elimination knockout bracket**: add players (4, 8
 
 - **Players** – Add/remove players. Bracket generates only with **4, 8, 16, or 32** players (no byes).
 - **Knockout bracket** – Generate bracket, set the winner for each match; winners advance to the next round until the final.
-- **TV display** (`/display`) – Full-screen bracket view; updates in real time when you change data on the main page (same browser/device).
+- **TV display** (`/display`) – Full-screen bracket view. On the **same device** it updates via the browser’s storage event. On **another device** (e.g. TV) it polls the API every few seconds—see **TV sync across devices** below.
 - **Password** – Optional app password via env var (see below).
 - **Mobile** – Main page (add players, set winners) is responsive and usable on a phone.
 - **Data** – Stored in the browser (localStorage). It **persists** when you close the tab and come back later, so you can run the tournament over several days on the same device. (Using the app on a different phone or PC will not show the same data unless you use the same browser profile.)
@@ -54,10 +54,24 @@ Anyone opening the app will see a password screen first; after entering the corr
 
 The project includes `vercel.json` so `/display` and other routes work on Vercel (all routes serve `index.html`).
 
+### 4. TV sync across devices (laptop → TV)
+
+If the TV is a **different device** (e.g. TV browser), it cannot see your laptop’s localStorage. To make the TV update when you change things on the laptop:
+
+1. Create a free **Upstash Redis** database at [console.upstash.com](https://console.upstash.com) (sign in with GitHub).
+2. In the database page, copy the **REST URL** and **REST Token**.
+3. In Vercel: **Project → Settings → Environment Variables** add:
+   - **Name:** `UPSTASH_REDIS_REST_URL` → **Value:** your REST URL  
+   - **Name:** `UPSTASH_REDIS_REST_TOKEN` → **Value:** your REST Token  
+   - **Environments:** Production (and Preview if you want).
+4. **Redeploy** the project.
+
+After that, the main page pushes state to the API whenever you change it, and the TV display polls the API every 2.5 seconds, so the TV stays in sync even on another device.
+
 ## Data persistence
 
-- **localStorage** is used for players and bracket. It survives refresh and closing the browser, so the same device will still have the bracket if you continue the next day.
-- Data is **per device/browser**. To have the same bracket on multiple devices (e.g. phone + TV), you’d need a backend/database; this version is single-device storage.
+- **localStorage** is used for players and bracket on the device where you edit. It survives refresh and closing the browser.
+- With **Upstash Redis** configured (see above), the TV on another device stays in sync by polling the API; the API stores a copy of the state.
 
 ## Build
 
@@ -69,5 +83,5 @@ npm run preview
 ## Tech
 
 - React 18 + Vite, React Router
-- localStorage (no backend)
+- localStorage + optional Upstash Redis (for TV sync across devices)
 - Optional password via `VITE_APP_PASSWORD`

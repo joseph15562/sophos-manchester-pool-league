@@ -22,6 +22,12 @@ export default function MainPage() {
 
   useEffect(() => {
     saveState(players, matches, bracket);
+    // Sync to API so TV on another device can poll and stay in sync
+    fetch('/api/state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ players, matches, bracket }),
+    }).catch(() => {});
   }, [players, matches, bracket]);
 
   return (

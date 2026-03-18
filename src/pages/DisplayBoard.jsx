@@ -3,10 +3,10 @@ import { loadState, STORAGE_KEY } from '../lib/storage';
 import { getRoundLabel } from '../lib/bracket';
 import './DisplayBoard.css';
 
-function refreshState(setPlayers, setBracket) {
-  const state = loadState();
-  setPlayers(state.players);
-  setBracket(state.bracket);
+function applyState(data, setPlayers, setBracket) {
+  if (!data) return;
+  setPlayers(Array.isArray(data.players) ? data.players : []);
+  setBracket(data.bracket ?? null);
 }
 
 export default function DisplayBoard() {
@@ -17,22 +17,37 @@ export default function DisplayBoard() {
     (e) => {
       if (e.key !== STORAGE_KEY || !e.newValue) return;
       try {
-        const data = JSON.parse(e.newValue);
-        setPlayers(Array.isArray(data.players) ? data.players : []);
-        setBracket(data.bracket ?? null);
+        applyState(JSON.parse(e.newValue), setPlayers, setBracket);
       } catch {}
     },
     []
   );
 
+  // Initial load from localStorage (same device)
   useEffect(() => {
-    refreshState(setPlayers, setBracket);
+    const state = loadState();
+    applyState(state, setPlayers, setBracket);
   }, []);
 
+  // Same device: listen for storage events
   useEffect(() => {
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, [handleStorage]);
+
+  // Other device (e.g. TV): poll API so TV updates when laptop changes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const r = await fetch('/api/state');
+        if (r.ok) {
+          const data = await r.json();
+          applyState(data, setPlayers, setBracket);
+        }
+      } catch {}
+    }, 2500);
+    return () => clearInterval(interval);
+  }, []);
 
   const getPlayerName = (id) => (id ? players.find((p) => p.id === id)?.name ?? '—' : 'BYE');
 
