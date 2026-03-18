@@ -323,6 +323,37 @@
   max-width: 480px;
 }
 
+/* Empty state (no bracket): center content for TV */
+.display-board:not(.display-board-bracket) .display-empty-center {
+  text-align: center;
+  margin: 2rem auto 0.5rem;
+  max-width: 480px;
+}
+
+.display-sync-hint {
+  font-size: 0.9rem;
+  margin: 0.5rem auto 1rem !important;
+  max-width: 420px;
+  color: #93c5fd;
+  text-align: center;
+}
+
+.display-refresh-btn {
+  display: block;
+  margin: 1rem auto 0;
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0a1628;
+  background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.35);
+}
+.display-refresh-btn:hover { filter: brightness(1.08); }
+.display-refresh-btn:active { filter: brightness(0.95); }
+
 .bracket-display-container {
   flex: 1;
   display: grid;

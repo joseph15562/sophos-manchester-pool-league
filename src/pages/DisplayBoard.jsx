@@ -36,18 +36,21 @@ export default function DisplayBoard() {
   }, [handleStorage]);
 
   // Other device (e.g. TV): poll API so TV updates when laptop changes
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const r = await fetch('/api/state');
-        if (r.ok) {
-          const data = await r.json();
-          applyState(data, setPlayers, setBracket);
-        }
-      } catch {}
-    }, 2500);
-    return () => clearInterval(interval);
+  const fetchState = useCallback(async () => {
+    try {
+      const r = await fetch('/api/state');
+      if (r.ok) {
+        const data = await r.json();
+        applyState(data, setPlayers, setBracket);
+      }
+    } catch {}
   }, []);
+
+  useEffect(() => {
+    fetchState(); // poll immediately so TV shows data without waiting
+    const interval = setInterval(fetchState, 2500);
+    return () => clearInterval(interval);
+  }, [fetchState]);
 
   const getPlayerName = (id) => (id ? players.find((p) => p.id === id)?.name ?? '—' : 'BYE');
 
@@ -61,6 +64,9 @@ export default function DisplayBoard() {
         </header>
         <p className="display-empty display-empty-center">
           Add players and generate the bracket on the main page. Everyone will appear in the first round; winners advance until one champion.
+        </p>
+        <p className="display-empty display-sync-hint">
+          On a TV or AirTame? Open the main page on your phone or laptop—the bracket will appear here automatically in a few seconds. No need to tap anything on the screen.
         </p>
       </div>
     );
