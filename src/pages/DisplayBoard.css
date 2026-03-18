@@ -417,15 +417,14 @@
   font-size: clamp(0.6rem, 1.2vw, 0.8rem);
   font-weight: 600;
   color: #e2e8f0;
-  white-space: nowrap;
   min-width: 0;
 }
 
 .bracket-display-slot {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
   text-align: center;
 }
 
