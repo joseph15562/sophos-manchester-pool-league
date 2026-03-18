@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import PlayerList from '../components/PlayerList';
 import GroupPhasePanel from '../components/GroupPhasePanel';
@@ -15,6 +15,7 @@ export default function MainPage() {
   const [groups, setGroups] = useState(null);
   const [groupMatches, setGroupMatches] = useState([]);
   const [locked, setLocked] = useState(getLocked());
+  const hasSyncedFromApi = useRef(false);
 
   // Load from localStorage for instant show, then sync from API so any device has latest saved state
   useEffect(() => {
@@ -35,11 +36,13 @@ export default function MainPage() {
         setGroups(Array.isArray(data.groups) ? data.groups : null);
         setGroupMatches(Array.isArray(data.groupMatches) ? data.groupMatches : []);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => { hasSyncedFromApi.current = true; });
   }, []);
 
   useEffect(() => {
     saveState(players, matches, bracket, groups, groupMatches);
+    if (!hasSyncedFromApi.current) return;
     fetch('/api/state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
