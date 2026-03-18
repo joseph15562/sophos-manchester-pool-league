@@ -63,6 +63,14 @@
   color: var(--text-h);
 }
 
+.app-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
 .display-link {
   display: inline-block;
   font-size: 0.9rem;
@@ -72,6 +80,56 @@
 
 .display-link:hover {
   text-decoration: underline;
+}
+
+/* PIN lock bar */
+.pin-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pin-bar-locked {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+}
+
+.pin-bar-label {
+  font-size: 0.85rem;
+  color: var(--text);
+  margin: 0;
+}
+
+.pin-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pin-input {
+  width: 140px;
+  min-width: 0;
+}
+
+.pin-error {
+  width: 100%;
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.locked-hint {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text);
+}
+
+.panel--locked .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .app-main {
