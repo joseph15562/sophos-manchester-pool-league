@@ -16,13 +16,26 @@ export default function MainPage() {
   const [groupMatches, setGroupMatches] = useState([]);
   const [locked, setLocked] = useState(getLocked());
 
+  // Load from localStorage for instant show, then sync from API so any device has latest saved state
   useEffect(() => {
-    const state = loadState();
-    setPlayers(state.players);
-    setMatches(state.matches ?? []);
-    setBracket(state.bracket);
-    setGroups(state.groups ?? null);
-    setGroupMatches(state.groupMatches ?? []);
+    const local = loadState();
+    setPlayers(local.players ?? []);
+    setMatches(local.matches ?? []);
+    setBracket(local.bracket ?? null);
+    setGroups(local.groups ?? null);
+    setGroupMatches(local.groupMatches ?? []);
+
+    fetch('/api/state')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data) return;
+        setPlayers(Array.isArray(data.players) ? data.players : []);
+        setMatches(Array.isArray(data.matches) ? data.matches : []);
+        setBracket(data.bracket ?? null);
+        setGroups(Array.isArray(data.groups) ? data.groups : null);
+        setGroupMatches(Array.isArray(data.groupMatches) ? data.groupMatches : []);
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
