@@ -155,6 +155,26 @@ export default function DisplayBoard() {
         <p className="display-subtitle">ROAD TO FINAL · EVERYONE AT THE START · ELIMINATE AS IT GOES</p>
       </header>
 
+      {hasGroups && (
+        <div className="display-groups-bar">
+          <p className="display-groups-bar-label">GROUP PHASE — 1ST QUALIFIED</p>
+          <div className="display-groups-bar-cards">
+            {groupStandingsData.map(({ groupName, standings }) => (
+              <div key={groupName} className="display-group-card display-group-card-inline">
+                <h3 className="display-group-title">{groupName}</h3>
+                <ol className="display-group-standings">
+                  {standings.map((s, idx) => (
+                    <li key={s.playerId} className={idx === 0 ? 'display-group-first' : ''}>
+                      {idx + 1}. {s.name} <span className="display-group-wins">— {s.wins}W</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="bracket-display-container">
         {/* Left side: first half of draw */}
         <div className="bracket-display-half bracket-display-left">

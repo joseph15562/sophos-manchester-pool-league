@@ -410,6 +410,46 @@
   margin-top: 1rem;
 }
 
+/* Group phase bar above bracket (when both group phase and knockout exist) */
+.display-groups-bar {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(96, 165, 250, 0.35);
+}
+
+.display-groups-bar-label {
+  margin: 0 0 0.5rem;
+  font-size: clamp(0.6rem, 1.1vw, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #93c5fd;
+  text-transform: uppercase;
+}
+
+.display-groups-bar-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.display-group-card-inline {
+  padding: 0.5rem 0.75rem;
+  min-width: 0;
+}
+
+.display-group-card-inline .display-group-title {
+  font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+  margin-bottom: 0.25rem;
+}
+
+.display-group-card-inline .display-group-standings li {
+  padding: 0.1rem 0;
+  font-size: clamp(0.65rem, 1.1vw, 0.8rem);
+}
+
 .bracket-display-container {
   flex: 1;
   display: grid;
